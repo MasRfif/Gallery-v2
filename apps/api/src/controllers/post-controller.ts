@@ -50,6 +50,15 @@ class PaintingController {
       .json({ Response: { ok: true }, data: postWithImageUrl });
   }
 
+  async getPaintingById(req: any, res: any) {
+    const id = Number(req.params.id);
+    const post = await prisma.painting.findUnique({
+      where: { id },
+    });
+
+    return res.status(200).json({ Response: { ok: true }, data: post });
+  }
+
   async deletePainting(req: any, res: any) {
     const id = Number(req.params.id);
     const post = await prisma.painting.findUnique({

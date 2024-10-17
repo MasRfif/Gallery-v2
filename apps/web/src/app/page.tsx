@@ -9,26 +9,24 @@ export default function Home() {
   const [caption, setCaption] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [price, setPrice] = useState<number>(0);
-  const [previewUrl, setPreviewUrl] = useState<string | undefined>(); // For image preview in dropzone
+  const [previewUrl, setPreviewUrl] = useState<string | undefined>();
   const [submittedPreview, setSubmittedPreview] = useState<{
     url: string;
     caption: string;
     description: string;
     price: number;
-  } | null>(null); // For submitted painting card
+  } | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Update preview as soon as the user selects a file
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
-      setPreviewUrl(URL.createObjectURL(selectedFile)); // Set preview URL immediately
+      setPreviewUrl(URL.createObjectURL(selectedFile));
     }
   };
 
-  // Handle form submission
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -53,7 +51,6 @@ export default function Home() {
       const data = await response.json();
 
       if (data.response.ok) {
-        // Update preview with submitted values for the painting card
         setSubmittedPreview({
           url: previewUrl!,
           caption,
@@ -61,7 +58,6 @@ export default function Home() {
           price,
         });
 
-        // Clear form fields after submission
         setCaption('');
         setDescription('');
         setPrice(0);

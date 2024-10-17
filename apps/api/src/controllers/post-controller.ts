@@ -52,13 +52,6 @@ class PaintingController {
 
   async getPaintingById(req: any, res: any) {
     const id = Number(req.params.id);
-    const post = await prisma.painting.findMany();
-    const postWithImageUrl = await Promise.all(
-      post.map(async (post: any) => {
-        const imageUrl = await getFileUrl(post.imageName);
-        return { ...post, imageUrl };
-      }),
-    );
 
     try {
       const painting = await prisma.painting.findUnique({
@@ -71,9 +64,13 @@ class PaintingController {
           .json({ Response: { ok: false, message: 'Painting not found' } });
       }
 
+      // Fetch the image URL based on the painting's image name
+      const imageUrl = await getFileUrl(painting.imageName);
+
+      // Include the image URL in the response
       return res
         .status(200)
-        .json({ Response: { ok: true }, data: painting, postWithImageUrl });
+        .json({ Response: { ok: true }, data: { ...painting, imageUrl } });
     } catch (error) {
       console.error(error);
       return res

@@ -52,11 +52,25 @@ class PaintingController {
 
   async getPaintingById(req: any, res: any) {
     const id = Number(req.params.id);
-    const post = await prisma.painting.findUnique({
-      where: { id },
-    });
 
-    return res.status(200).json({ Response: { ok: true }, data: post });
+    try {
+      const painting = await prisma.painting.findUnique({
+        where: { id },
+      });
+
+      if (!painting) {
+        return res
+          .status(404)
+          .json({ Response: { ok: false, message: 'Painting not found' } });
+      }
+
+      return res.status(200).json({ Response: { ok: true }, data: painting });
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(500)
+        .json({ Response: { ok: false, message: 'Internal Server Error' } });
+    }
   }
 
   async deletePainting(req: any, res: any) {

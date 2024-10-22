@@ -15,11 +15,16 @@ datasource db {
 
 
 model Painting {
-  id          Int      @id @default(autoincrement())
-  thumbnail   String
-  imageName    String
-  caption       String   
-  description String
-  price       Float
-  createdAt    DateTime @default(now())
+  id              Int       @id @default(autoincrement())
+  title           String
+  thumbnail       String
+  imageName       String
+  caption         String
+  description     String    @db.VarChar(1000)
+  price           Float
+  yearCreated     String     
+  creator         String     
+  featuredImageUrl String     @db.VarChar(2000)
+  imageDimensions Json       
+  createdAt       DateTime   @default(now())
 }

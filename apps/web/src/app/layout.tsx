@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
 import React from 'react';
+import Footer from '@/Compenents/Footer';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -27,9 +28,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-t from-[#584a30] to-[#9e8556] `}
       >
         {children}
+        <Footer />
       </body>
     </html>
   );

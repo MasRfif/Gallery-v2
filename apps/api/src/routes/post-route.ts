@@ -11,8 +11,13 @@ router.get('/api/v1', (req: any, res: any) => {
 });
 
 router.post('/post', upload.single('image'), paintingController.createPainting);
+router.put(
+  '/post/:id',
+  upload.single('image'),
+  paintingController.updatePainting,
+);
 router.get('/posts', paintingController.getPaintings);
 router.get('/posts/:id', paintingController.getPaintingById);
-router.delete('/:id', paintingController.deletePainting);
+router.delete('posts/:id', paintingController.deletePainting);
 
 export default router;

@@ -105,6 +105,56 @@ class PaintingController {
     }
   }
 
+  // Update Painting
+  async updatePainting(req: any, res: any) {
+    const id = Number(req.params.id);
+    const { title, caption, description, price, yearCreated, creator } =
+      req.body;
+
+    try {
+      const painting = await prisma.painting.findUnique({
+        where: { id },
+      });
+
+      if (!painting) {
+        return res
+          .status(404)
+          .json({ Response: { ok: false, message: 'Painting not found' } });
+      }
+
+      const updatedData: any = {
+        title: title || painting.title,
+        caption: caption || painting.caption,
+        description: description || painting.description,
+        price: price !== undefined ? parseFloat(price) : painting.price,
+        yearCreated: yearCreated || painting.yearCreated,
+        creator: creator || painting.creator,
+      };
+
+      // If a new file is uploaded, handle the file upload and update the image
+      if (req.file) {
+        const newImageName = generateFileName();
+        await uploadFile(req.file.buffer, newImageName, req.file.mimetype);
+        updatedData.imageName = newImageName;
+
+        // Delete the old image from S3
+        await deleteFile(painting.imageName);
+      }
+
+      await prisma.painting.update({
+        where: { id },
+        data: updatedData,
+      });
+
+      return res.status(200).json({ Response: { ok: true } });
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(500)
+        .json({ Response: { ok: false, message: 'Internal Server Error' } });
+    }
+  }
+
   // Delete Painting
   async deletePainting(req: any, res: any) {
     const id = Number(req.params.id);

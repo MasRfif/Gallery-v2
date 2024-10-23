@@ -32,7 +32,7 @@ export default function Admin() {
   return (
     <div className="flex">
       <Sidebar setSelectedPage={setSelectedPage} />
-      <div className="flex-1 p-8">{renderContent()}</div>
+      <div className="w-full p-8">{renderContent()}</div>
     </div>
   );
 }

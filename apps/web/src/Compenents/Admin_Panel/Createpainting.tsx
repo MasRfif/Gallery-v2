@@ -9,6 +9,19 @@ import React, {
 } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+// Define a type for Painting
+interface Painting {
+  id: string;
+  title: string;
+  yearCreated: string;
+  creator: string;
+  caption: string;
+  description: string;
+  price: number;
+  imageUrl: string;
+}
+
 export default function CreatePainting() {
   const [file, setFile] = useState<File | undefined>();
   const [caption, setCaption] = useState<string>('');
@@ -18,19 +31,11 @@ export default function CreatePainting() {
   const [yearCreated, setYearCreated] = useState<string>('');
   const [creator, setCreator] = useState<string>('');
   const [previewUrl, setPreviewUrl] = useState<string | undefined>();
-  const [submittedPreview, setSubmittedPreview] = useState<{
-    url: string;
-    caption: string;
-    description: string;
-    price: number;
-    title: string;
-    yearCreated: string;
-    creator: string;
-  } | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [paintings, setPaintings] = useState<any[]>([]);
-  const [editingPainting, setEditingPainting] = useState<any | null>(null);
+  const [paintings, setPaintings] = useState<Painting[]>([]);
+  const [editingPainting, setEditingPainting] = useState<Painting | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     async function fetchPaintings() {
       try {
@@ -45,6 +50,7 @@ export default function CreatePainting() {
     }
     fetchPaintings();
   }, []);
+
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
@@ -52,6 +58,7 @@ export default function CreatePainting() {
       setPreviewUrl(URL.createObjectURL(selectedFile));
     }
   };
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!file) return;
@@ -71,15 +78,7 @@ export default function CreatePainting() {
       );
       const data = await response.json();
       if (data.response.ok) {
-        setSubmittedPreview({
-          url: previewUrl!,
-          caption,
-          description,
-          price,
-          title,
-          yearCreated,
-          creator,
-        });
+        // Optionally use submittedPreview here
         setCaption('');
         setDescription('');
         setPrice(0);
@@ -108,6 +107,7 @@ export default function CreatePainting() {
       setIsLoading(false);
     }
   }
+
   const handleDelete = async (id: string) => {
     const confirmDelete = confirm(
       'Are you sure you want to delete this painting?',
@@ -115,7 +115,7 @@ export default function CreatePainting() {
     if (!confirmDelete) return;
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/posts/:id`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/posts/${id}`,
         { method: 'DELETE' },
       );
       if (response.ok) {
@@ -137,7 +137,8 @@ export default function CreatePainting() {
       console.error(error);
     }
   };
-  const handleEdit = (painting: any) => {
+
+  const handleEdit = (painting: Painting) => {
     setEditingPainting(painting);
     setTitle(painting.title);
     setCaption(painting.caption);
@@ -147,20 +148,22 @@ export default function CreatePainting() {
     setCreator(painting.creator);
     setPreviewUrl(painting.imageUrl);
   };
+
   const handleUpdate = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const updatedPainting = {
-        id: editingPainting.id,
+        id: editingPainting!.id,
         title,
         yearCreated,
         creator,
         caption,
         description,
         price,
+        imageUrl: editingPainting!.imageUrl,
       };
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/post/:id`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/post/${editingPainting!.id}`,
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -170,7 +173,7 @@ export default function CreatePainting() {
       if (response.ok) {
         setPaintings(
           paintings.map((painting) =>
-            painting.id === editingPainting.id ? updatedPainting : painting,
+            painting.id === editingPainting!.id ? updatedPainting : painting,
           ),
         );
         setEditingPainting(null);
@@ -182,6 +185,7 @@ export default function CreatePainting() {
       toast.error('Failed to update painting');
     }
   };
+
   return (
     <section className="flex justify-between w-96">
       <div className="flex">
@@ -192,6 +196,18 @@ export default function CreatePainting() {
         >
           <h1 className="text-3xl font-bold">Create Painting</h1>
           <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+            <ToastContainer
+              position="top-left"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="colored"
+            />
             {/* Input Fields */}
             <div>
               <label
@@ -316,9 +332,20 @@ export default function CreatePainting() {
             </form>
           )}
         </div>
-
+        {previewUrl && (
+          <div>
+            <h2>Image Preview:</h2>
+            <Image
+              src={previewUrl}
+              alt="Image Preview"
+              className="w-full h-64 object-cover rounded-md"
+              width={200}
+              height={200}
+            />
+          </div>
+        )}
         {/* Painting Display Section */}
-        <div className="flex-1 ml-4 ">
+        <div className="flex-1 ml-4">
           {paintings.map((painting) => (
             <div
               key={painting.id}

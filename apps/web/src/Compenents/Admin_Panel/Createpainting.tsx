@@ -42,22 +42,24 @@ export default function CreatePainting() {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/posts`,
         );
-        const data = await response.json();
+        const result = await response.json();
 
-        // Check if data.paintings exists and is an array
-        if (Array.isArray(data.paintings)) {
-          setPaintings(data.paintings);
+        console.log(result);
+
+        if (Array.isArray(result.data)) {
+          setPaintings(result.data);
         } else {
-          console.error('Expected paintings array not found:', data);
-          setPaintings([]); // Set to empty array if not found
+          console.error('Expected paintings array not found:', result);
+          setPaintings([]);
         }
       } catch (error) {
         console.error('Error fetching paintings:', error);
-        setPaintings([]); // Set to empty array on error as well
+        setPaintings([]);
       }
     }
     fetchPaintings();
   }, []);
+
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {

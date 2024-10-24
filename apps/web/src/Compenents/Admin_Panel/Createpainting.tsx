@@ -43,14 +43,21 @@ export default function CreatePainting() {
           `${process.env.NEXT_PUBLIC_API_BASE_URL}/posts`,
         );
         const data = await response.json();
-        setPaintings(data.paintings);
+
+        // Check if data.paintings exists and is an array
+        if (Array.isArray(data.paintings)) {
+          setPaintings(data.paintings);
+        } else {
+          console.error('Expected paintings array not found:', data);
+          setPaintings([]); // Set to empty array if not found
+        }
       } catch (error) {
         console.error('Error fetching paintings:', error);
+        setPaintings([]); // Set to empty array on error as well
       }
     }
     fetchPaintings();
   }, []);
-
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
@@ -170,11 +177,11 @@ export default function CreatePainting() {
         },
       );
       if (response.ok) {
-        // setPaintings(
-        //   paintings.map((painting) =>
-        //     painting.id === editingPainting!.id ? updatedPainting : painting,
-        //   ),
-        // );
+        setPaintings(
+          paintings.map((painting) =>
+            painting.id === editingPainting!.id ? updatedPainting : painting,
+          ),
+        );
 
         setEditingPainting(null);
       } else {

@@ -78,7 +78,6 @@ export default function CreatePainting() {
       );
       const data = await response.json();
       if (data.response.ok) {
-        // Optionally use submittedPreview here
         setCaption('');
         setDescription('');
         setPrice(0);
@@ -171,11 +170,12 @@ export default function CreatePainting() {
         },
       );
       if (response.ok) {
-        setPaintings(
-          paintings.map((painting) =>
-            painting.id === editingPainting!.id ? updatedPainting : painting,
-          ),
-        );
+        // setPaintings(
+        //   paintings.map((painting) =>
+        //     painting.id === editingPainting!.id ? updatedPainting : painting,
+        //   ),
+        // );
+
         setEditingPainting(null);
       } else {
         toast.error('Failed to update painting');

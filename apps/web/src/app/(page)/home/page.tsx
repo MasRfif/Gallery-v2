@@ -84,12 +84,21 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export default function Home() {
   const [file, setFile] = useState<File | undefined>();
+  const [title, setTitle] = useState<string>(''); // Added title
   const [caption, setCaption] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [price, setPrice] = useState<number>(0);
+  const [yearCreated, setYearCreated] = useState<string>(''); // Added yearCreated
+  const [creator, setCreator] = useState<string>(''); // Added creator
+  const [featuredImageUrl, setFeaturedImageUrl] = useState<string>(''); // Added featuredImageUrl
+  const [imageDimensions, setImageDimensions] = useState<{
+    height: number;
+    width: number;
+  } | null>(null); // Added imageDimensions
   const [previewUrl, setPreviewUrl] = useState<string | undefined>();
   const [submittedPreview, setSubmittedPreview] = useState<{
     url: string;
+    title: string; // Updated to include title
     caption: string;
     description: string;
     price: number;
@@ -102,6 +111,12 @@ export default function Home() {
     if (selectedFile) {
       setFile(selectedFile);
       setPreviewUrl(URL.createObjectURL(selectedFile));
+      // You can also set image dimensions here if needed
+      const img = new Image();
+      img.src = URL.createObjectURL(selectedFile);
+      img.onload = () => {
+        setImageDimensions({ height: img.height, width: img.width });
+      };
     }
   };
 
@@ -112,9 +127,14 @@ export default function Home() {
 
     const formData = new FormData();
     formData.append('image', file);
+    formData.append('title', title); // Include title
     formData.append('caption', caption);
     formData.append('description', description);
     formData.append('price', price.toString());
+    formData.append('yearCreated', yearCreated); // Include yearCreated
+    formData.append('creator', creator); // Include creator
+    formData.append('featuredImageUrl', featuredImageUrl); // Include featuredImageUrl
+    formData.append('imageDimensions', JSON.stringify(imageDimensions)); // Include imageDimensions
 
     setIsLoading(true);
 
@@ -134,11 +154,23 @@ export default function Home() {
         throw new Error('Unexpected response from server');
       }
 
-      setSubmittedPreview({ url: previewUrl!, caption, description, price });
+      setSubmittedPreview({
+        url: previewUrl!,
+        title,
+        caption,
+        description,
+        price,
+      });
 
+      // Reset form fields
+      setTitle('');
       setCaption('');
       setDescription('');
       setPrice(0);
+      setYearCreated('');
+      setCreator('');
+      setFeaturedImageUrl('');
+      setImageDimensions(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -168,6 +200,9 @@ export default function Home() {
               alt="Painting preview"
               className="w-full h-64 object-cover rounded-md"
             />
+            <h2 className="text -xl font-bold mt-4">
+              {submittedPreview.title} // Display title
+            </h2>
             <h2 className="text-xl font-bold mt-4">
               {submittedPreview.caption}
             </h2>
@@ -199,6 +234,15 @@ export default function Home() {
           />
           <input
             type="text"
+            placeholder="Title"
+            className="border rounded-xl py-2 px-2"
+            value={title}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setTitle(e.target.value)
+            }
+          />
+          <input
+            type="text"
             placeholder="Caption"
             className="border rounded-xl py-2 px-2"
             value={caption}
@@ -221,6 +265,33 @@ export default function Home() {
             value={price}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
               setPrice(parseFloat(e.target.value))
+            }
+          />
+          <input
+            type="text"
+            placeholder="Year Created"
+            className="border rounded-xl py-2 px-2"
+            value={yearCreated}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setYearCreated(e.target.value)
+            }
+          />
+          <input
+            type="text"
+            placeholder="Creator"
+            className="border rounded-xl py-2 px-2"
+            value={creator}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setCreator(e.target.value)
+            }
+          />
+          <input
+            type="text"
+            placeholder="Featured Image URL"
+            className="border rounded-xl py-2 px-2"
+            value={featuredImageUrl}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setFeaturedImageUrl(e.target.value)
             }
           />
           <div>

@@ -126,39 +126,33 @@ export default function Home() {
           body: formData,
         },
       );
+
       const data = await response.json();
 
-      if (data.response.ok) {
-        setSubmittedPreview({
-          url: previewUrl!,
-          caption,
-          description,
-          price,
-        });
-
-        setCaption('');
-        setDescription('');
-        setPrice(0);
-
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
-
-        toast('📸 Image uploaded!', {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: 'colored',
-        });
-      } else {
+      if (!data.response || !data.response.ok) {
+        console.error('Unexpected response:', data);
         throw new Error('Unexpected response from server');
       }
+
+      setSubmittedPreview({ url: previewUrl!, caption, description, price });
+
+      setCaption('');
+      setDescription('');
+      setPrice(0);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      toast('📸 Image uploaded!', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'colored',
+      });
     } catch (error) {
-      console.error(error);
+      console.error('Error during submission:', error);
     } finally {
       setIsLoading(false);
     }

@@ -188,7 +188,7 @@ export default function Home() {
     <main className="h-full w-screen flex justify-center items-center">
       <div className="p-48 ">
         {submittedPreview && (
-          <div className="border shadow-lg rounded-lg p-4 w-[30rem] mb-5">
+          <div className="border bg-white shadow-lg rounded-lg p-4 w-[30rem] mb-5">
             <Image
               src={submittedPreview.url}
               alt="Painting preview"

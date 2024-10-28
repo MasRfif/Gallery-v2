@@ -79,6 +79,7 @@
 'use client';
 
 import React, { useState, FormEvent, ChangeEvent, useRef } from 'react';
+import Image from 'next/image';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -111,12 +112,6 @@ export default function Home() {
     if (selectedFile) {
       setFile(selectedFile);
       setPreviewUrl(URL.createObjectURL(selectedFile));
-      // You can also set image dimensions here if needed
-      const img = new Image();
-      img.src = URL.createObjectURL(selectedFile);
-      img.onload = () => {
-        setImageDimensions({ height: img.height, width: img.width });
-      };
     }
   };
 
@@ -162,7 +157,6 @@ export default function Home() {
         price,
       });
 
-      // Reset form fields
       setTitle('');
       setCaption('');
       setDescription('');
@@ -195,13 +189,15 @@ export default function Home() {
       <div className="p-48 ">
         {submittedPreview && (
           <div className="border shadow-lg rounded-lg p-4 w-[30rem] mb-5">
-            <img
+            <Image
               src={submittedPreview.url}
               alt="Painting preview"
               className="w-full h-64 object-cover rounded-md"
+              width={500}
+              height={500}
             />
             <h2 className="text -xl font-bold mt-4">
-              {submittedPreview.title} // Display title
+              {submittedPreview.title}
             </h2>
             <h2 className="text-xl font-bold mt-4">
               {submittedPreview.caption}
@@ -307,10 +303,12 @@ export default function Home() {
               className="flex flex-col items-center w-full max-w-lg p-5 mx-auto mt-2 text-center bg-white border-2 border-gray-300 border-dashed cursor-pointer dark:bg-gray-900 dark:border-gray-700 rounded-xl"
             >
               {previewUrl ? (
-                <img
+                <Image
                   src={previewUrl}
                   alt="Selected"
                   className="w-full h-64 object-cover rounded-md"
+                  width={500}
+                  height={500}
                 />
               ) : (
                 <svg
